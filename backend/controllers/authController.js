@@ -41,4 +41,45 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register };
+const login = async (req,res) => {
+  try {
+    const {email, password}=req.body;
+
+    //Find user
+    const user = await User.findOne({email});
+
+    if(!user) {
+      return res.status(400).json({
+        message: "Invalid Credentials",
+      });
+    }
+
+    //Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(!isMatch) {
+      return res.status(400).json({
+        message: "Invalid Credentials",
+      });
+    }
+
+    //Generate Token
+    const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:"7d"});
+
+    res.send({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+      
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = { register, login };
