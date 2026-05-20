@@ -7,16 +7,58 @@ const watchlistSchema = new mongoose.Schema(
             ref: 'User',
             required: true,
         },
-        title: {
+
+        //Movies/ Series meta data (to be fetched by TMDb API)
+
+        title: { //can be done manually or fetched by API
             type: String,
             required: true,
             trim: true,
         },
-        type: {
+        type: { //can be done manually or fetched by API
             type: String,
             enum: ['movie', 'series'],
             required: true,
         },
+
+        tmdbId: {
+            type: Number,
+        },
+        posterPath: {
+            type: String,
+        },
+        backdropPath: {
+            type: String,
+        },
+        overview: {
+            type: String,
+        },
+        releaseYear: {
+            type: Number,
+        },
+        genre: [
+            {
+                type: String,
+            },
+        ],
+        language: {
+            type: String,
+        },
+
+        //for movies
+        runtime: {
+            type: Number,
+        },
+
+        //for series
+        totalSeasons: {
+            type: Number,
+        },
+        totalEpisodes: {
+            type: Number,
+        },
+
+        //User given data
         status: {
             type: String,
             enum: ['planned', 'watching', 'completed'],
@@ -37,13 +79,35 @@ const watchlistSchema = new mongoose.Schema(
             min: 1,
             max: 10,
         },
+        favorite: {
+            type: Boolean,
+            default: false,
+        },
         notes: {
             type: String,
             maxLength: 500,
         },
+
+        // optional dates
+        startedAt: {
+            type: Date,
+        },
+        completedAt: {
+            type: Date,
+        },
     },
     {
         timestamps:true
+    }
+);
+
+watchlistSchema.index(
+    {
+        user: 1,
+        tmdbId:1,
+    },
+    {
+        unique:true,
     }
 );
 

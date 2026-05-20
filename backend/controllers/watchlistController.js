@@ -19,9 +19,30 @@ const addToWatchlist = async (req,res) => {
 //READ
 const getWatchlist = async (req,res)=>{
     try {
-        const items=await Watchlist.find({
+        const filter = {
             user: req.user.id,
+        };
+
+        //Filter by status
+        if(req.query.status) {
+            filter.status=req.query.status;
+        }
+
+        //Filter by type
+        if(req.query.type) {
+            filter.type=req.query.type;
+        }
+
+        //Filter by favorite
+        if(req.query.favorite) {
+            filter.favorite=req.query.favorite === "true";
+        }
+
+        const items=await Watchlist.find(filter).sort({
+            createdAt: -1
         });
+
+        res.json(items);
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -39,6 +60,8 @@ const updateWatchlist = async (req,res)=>{
         req.body,
         {new:true}
     );
+
+        res.json(item);
     } catch (error) {
         res.status(500).json({
             message: error.message
