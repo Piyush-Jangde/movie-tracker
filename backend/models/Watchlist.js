@@ -21,7 +21,7 @@ const watchlistSchema = new mongoose.Schema(
             required: true,
         },
 
-        tmdbId: {
+        imdbId: {
             type: Number,
         },
         posterPath: {
