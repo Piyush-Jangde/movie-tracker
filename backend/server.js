@@ -11,7 +11,11 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-app.use("api/auth", require("./routes/authRoutes"));
+app.get("/", (req,res)=>{
+    res.send("Movie Tracker API running")
+});
+
+app.use("/api/auth", require("./routes/authRoutes"));
 
 const PORT = process.env.PORT || 5000;
 
