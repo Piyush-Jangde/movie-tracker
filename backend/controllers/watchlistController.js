@@ -20,30 +20,44 @@ const addToWatchlist = async (req,res) => {
 //READ
 const getWatchlist = async (req,res)=>{
     try {
+        const {status, type, favorite, title, page=1, limit=10} = req.query;
+
         const filter = {
             user: req.user.id,
         };
 
-        //Filter by status
-        if(req.query.status) {
-            filter.status=req.query.status;
+        //Filter by title ("title" query)
+        if(title) {
+            filter.title = {
+                $regex: title,
+                $options: 'i' //makes it case insensitive
+            };
         }
+
+        //Filter by status
+        if(status) filter.status=status;
 
         //Filter by type
-        if(req.query.type) {
-            filter.type=req.query.type;
-        }
+        if(type) filter.type=type;
 
         //Filter by favorite
-        if(req.query.favorite) {
-            filter.favorite=req.query.favorite === "true";
-        }
+        if(favorite) filter.favorite=favorite;
 
-        const items=await Watchlist.find(filter).sort({
-            createdAt: -1
+        //Number of records to be skipped
+        const skip=(page-1)*limit; 
+
+        //sorting
+        const items=await Watchlist.find(filter)
+        .sort({createdAt: -1})
+        .skip(skip)
+        .limit(Number(limit));
+
+        res.json({
+            page: Number(page),
+            limit: Number(limit),
+            count: items.length,
+            items,
         });
-
-        res.json(items);
     } catch (error) {
         res.status(500).json({
             message: error.message
