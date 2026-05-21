@@ -3,10 +3,15 @@ const axios=require("axios");
 const searchMovies = async (req,res) => {
     try {
         const query=req.query.q;
+        const type=req.query.type;
 
-        const response = await axios.get(
-            `http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${query}`
-        );
+        let url=`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${query}`;
+
+        if(type) {
+            url += `&type=${type}`;
+        }
+
+        const response = await axios.get(url); 
         
         const data=response.data;
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const auth=require('../middleware/authMiddleware');
-
+const {validateWatchlist,validateWatchlistUpdate}=require('../middleware/validationMiddleware');
 const {
     addToWatchlist,
     getWatchlist,
@@ -13,9 +13,9 @@ const {
 
 router.use(auth);
 
-router.post('/', addToWatchlist);
+router.post('/',validateWatchlist, addToWatchlist);
 router.get('/', getWatchlist);
-router.put('/:id', updateWatchlist);
+router.put('/:id',validateWatchlistUpdate, updateWatchlist);
 router.delete('/:id', deleteWatchlist);
 router.post('/from-omdb/:imdbId',addFromOmdb);
 
