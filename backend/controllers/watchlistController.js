@@ -65,24 +65,55 @@ const getWatchlist = async (req,res)=>{
     }
 }
 
-//UPDATE
-const updateWatchlist = async (req,res)=>{
+//Getting a single watchlist Item
+const getWatchlistItem = async (req,res) => {
     try {
-        const item = await Watchlist.findOneAndUpdate({
-            _id: req.params.id,
-            user: req.user.id,
-        }, 
-        req.body,
-        {new:true}
-    );
+        const item = await Watchlist.findOne({
+            _id:req.params.id,
+            user: req.user.id
+        });
+
+        if(!item) {
+            return res.status(404).json({
+                message: 'Watchlist item not found'
+            });
+        }
 
         res.json(item);
+
     } catch (error) {
         res.status(500).json({
             message: error.message
         });
     }
-}
+};
+
+//UPDATE
+const updateWatchlist = async (req, res) => {
+    try {
+        const item = await Watchlist.findOne({
+            _id: req.params.id,
+            user: req.user.id,
+        });
+
+        if (!item) {
+            return res.status(404).json({
+                message: 'Watchlist item not found'
+            });
+        }
+
+        Object.assign(item, req.body);
+
+        await item.save();
+
+        res.json(item);
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
 
 //DELETE
 const deleteWatchlist = async (req,res)=>{
@@ -150,4 +181,121 @@ const addFromOmdb = async (req,res) => {
         });
     }
 }
-module.exports = {addToWatchlist, getWatchlist, updateWatchlist, deleteWatchlist, addFromOmdb};
+
+//Watchlist stats
+const getWatchlistStats = async (req,res) => {
+    try {
+        const userId=req.user.id;
+
+        const total = await Watchlist.countDocuments({
+            user: userId
+        });
+
+        const watching = await Watchlist.countDocuments({
+            user:userId,
+            status: 'watching',
+        })
+
+        const completed = await Watchlist.countDocuments({
+            user:userId,
+            status: 'completed',
+        })
+
+        const planned = await Watchlist.countDocuments({
+            user:userId,
+            status: 'planned',
+        })
+
+        const favorites = await Watchlist.countDocuments({
+            user:userId,
+            favorite: true,
+        })
+
+        const avgRatingResult = await Watchlist.aggregate([
+            {
+                $match: {
+                    user: req.user.id,
+                    rating: { $ne: null }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    averageRating: {
+                        $avg: '$rating'
+                    }
+                }
+            },
+        ]);
+
+    const averageRating =
+      avgRatingResult[0]?.averageRating || 0;
+
+      res.json({
+      total,
+      watching,
+      completed,
+      planned,
+      favorites,
+      averageRating: Number(
+        averageRating.toFixed(1)
+      )
+    });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    } 
+
+    
+}
+
+//Update progress for series
+const updateProgress = async (req,res) => {
+    try {
+        const { id }=req.params;
+        const { season, episode}=req.body;
+
+        const item = await Watchlist.findOne({
+            _id:id,
+            user: req.user.id
+        });
+
+        if(!item) {
+            return res.status(400).json({
+                message: 'Watchlist item not found'
+            });
+        }
+
+        if(season !==undefined) {
+            item.progress.season = season;
+        }
+
+        if(episode !==undefined) {
+            item.progress.episode = episode;
+        }
+
+        //minutesWatched not in the watchlist schema
+        // if(minutesWatched !==undefined) {
+        //     item.progress.minutesWatched = minutesWatched;
+        // }
+
+        await item.save();
+
+        res.json(item);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+module.exports = {
+    addToWatchlist,
+    getWatchlist,
+    getWatchlistItem,
+    updateWatchlist, 
+    deleteWatchlist, 
+    addFromOmdb, 
+    getWatchlistStats,
+    updateProgress,
+    };

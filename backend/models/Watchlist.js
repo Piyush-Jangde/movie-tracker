@@ -89,6 +89,7 @@ const watchlistSchema = new mongoose.Schema(
         },
 
         // optional dates
+        //These are dates when the current watchlist is "watching" and "completed"
         startedAt: {
             type: Date,
         },
@@ -97,6 +98,7 @@ const watchlistSchema = new mongoose.Schema(
         },
     },
     {
+        //these mark when the entry was created in MongoDB
         timestamps:true
     }
 );
@@ -111,4 +113,15 @@ watchlistSchema.index(
     }
 );
 
+
+watchlistSchema.pre('save',function (next) {
+    if( this.status === 'watching' && !this.startedAt ) {
+        this.startedAt= new Date();
+    }
+    if( this.status === 'completed' && !this.completedAt) {
+        this.completedAt = new Date();
+    }
+
+    next();
+})
 module.exports = mongoose.model('Watchlist', watchlistSchema);

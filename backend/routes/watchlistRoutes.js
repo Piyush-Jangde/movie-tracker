@@ -9,12 +9,18 @@ const {
     updateWatchlist,
     deleteWatchlist,
     addFromOmdb,
+    getWatchlistStats,
+    updateProgress,
 } = require('../controllers/watchlistController');
+
+
 
 router.use(auth);
 
 router.post('/',validateWatchlist, addToWatchlist);
 router.get('/', getWatchlist);
+router.get('/stats',getWatchlistStats)
+router.patch('/:id/progress',updateProgress);
 router.put('/:id',validateWatchlistUpdate, updateWatchlist);
 router.delete('/:id', deleteWatchlist);
 router.post('/from-omdb/:imdbId',addFromOmdb);
