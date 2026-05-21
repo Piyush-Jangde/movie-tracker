@@ -1,6 +1,6 @@
 const axios=require("axios");
 
-const searchMovies = async (req,res) => {
+const searchMovies = async (req,res,next) => {
     try {
         const query=req.query.q;
         const type=req.query.type;
@@ -32,13 +32,11 @@ const searchMovies = async (req,res) => {
         res.json(cleanedResults);
 
     } catch (error) {
-        res.status(500).json({
-            message: 'Error fetching data from OMDb'
-        });
+        next(error);
     }
 }
 
-const getMovieDetails = async (req,res) => {
+const getMovieDetails = async (req,res,next) => {
     try {
         const imdbId=req.params.imdbId;
 
@@ -73,11 +71,7 @@ const getMovieDetails = async (req,res) => {
         res.json(cleanedData);
 
     } catch (error) {
-        console.log(error.message);
-
-        res.status(500).json({
-            message: 'Error fetching movie details from OMDb'
-        });
+        next(error);
     }
 }
 

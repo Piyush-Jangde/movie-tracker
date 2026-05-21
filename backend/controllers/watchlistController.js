@@ -2,7 +2,7 @@ const Watchlist = require("../models/Watchlist");
 const axios=require('axios');
 
 //CREATE
-const addToWatchlist = async (req,res) => {
+const addToWatchlist = async (req,res,next) => {
     try {
         const item = await Watchlist.create({
             ...req.body,
@@ -11,16 +11,19 @@ const addToWatchlist = async (req,res) => {
 
         res.status(201).json(item);
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     }
 };
-
-//READ
-const getWatchlist = async (req,res)=>{
+ 
+//READ (fetches the whole collection)
+const getWatchlist = async (req,res,next)=>{
     try {
         const {status, type, favorite, title, page=1, limit=10} = req.query;
+
+        const pageNum=Number(page);
+        const limitNum=Number(limit);
+        //Number of records to be skipped
+        const skip=(pageNum-1)*limitNum;
 
         const filter = {
             user: req.user.id,
@@ -43,30 +46,37 @@ const getWatchlist = async (req,res)=>{
         //Filter by favorite
         if(favorite) filter.favorite=favorite;
 
-        //Number of records to be skipped
-        const skip=(page-1)*limit; 
+        ; 
 
+        const totalItems= await Watchlist.countDocuments(filter);
         //sorting
         const items=await Watchlist.find(filter)
         .sort({createdAt: -1})
         .skip(skip)
-        .limit(Number(limit));
+        .limit(limitNum);
+
+        const totalPages= Math.ceil(totalItems/limitNum);
+
+        const hasNextPage = pageNum < totalPages;
+        const hasPrevPage = pageNum >1;
 
         res.json({
             page: Number(page),
             limit: Number(limit),
             count: items.length,
+            totalItems,
+            totalPages,
+            hasNextPage,
+            hasPrevPage,
             items,
         });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     }
 }
 
 //Getting a single watchlist Item
-const getWatchlistItem = async (req,res) => {
+const getWatchlistItem = async (req,res,next) => {
     try {
         const item = await Watchlist.findOne({
             _id:req.params.id,
@@ -82,14 +92,12 @@ const getWatchlistItem = async (req,res) => {
         res.json(item);
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     }
 };
 
 //UPDATE
-const updateWatchlist = async (req, res) => {
+const updateWatchlist = async (req, res,next) => {
     try {
         const item = await Watchlist.findOne({
             _id: req.params.id,
@@ -109,14 +117,12 @@ const updateWatchlist = async (req, res) => {
         res.json(item);
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     }
 };
 
 //DELETE
-const deleteWatchlist = async (req,res)=>{
+const deleteWatchlist = async (req,res,next)=>{
     try {
         const item = await Watchlist.findOneAndDelete({
             _id: req.params.id,
@@ -127,14 +133,12 @@ const deleteWatchlist = async (req,res)=>{
             message: "Deleted Successfully"
         });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     }
 }
 
 //Fetching from omdb and saving in mongoDB
-const addFromOmdb = async (req,res) => {
+const addFromOmdb = async (req,res,next) => {
     try {
         const imdbId=req.params.imdbId;
 
@@ -167,23 +171,16 @@ const addFromOmdb = async (req,res) => {
         res.status(201).json(watchlistItem);
 
     } catch (error) {
-
-        console.log(error.message);
-
         if (error.code === 11000) {
-            return res.status(400).json({
-                message: 'This title is already in your watchlist'
-            });
+            error.statusCode = 400;
+            error.message = 'This title is already in your watchlist';
         }
-
-        res.status(500).json({
-            message: 'Error saving movie from OMDb'
-        });
+        next(error);
     }
 }
 
 //Watchlist stats
-const getWatchlistStats = async (req,res) => {
+const getWatchlistStats = async (req,res,next) => {
     try {
         const userId=req.user.id;
 
@@ -242,16 +239,14 @@ const getWatchlistStats = async (req,res) => {
       )
     });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     } 
 
     
 }
 
 //Update progress for series
-const updateProgress = async (req,res) => {
+const updateProgress = async (req,res,next) => {
     try {
         const { id }=req.params;
         const { season, episode}=req.body;
@@ -284,9 +279,7 @@ const updateProgress = async (req,res) => {
 
         res.json(item);
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
     }
 }
 module.exports = {

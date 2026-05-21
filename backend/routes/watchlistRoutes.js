@@ -2,10 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 const auth=require('../middleware/authMiddleware');
-const {validateWatchlist,validateWatchlistUpdate}=require('../middleware/validationMiddleware');
+const {
+    validateWatchlist,
+    validateWatchlistUpdate,
+    validatePagination,
+    validateWatchlistId
+} = require('../middleware/validationMiddleware');
 const {
     addToWatchlist,
     getWatchlist,
+    getWatchlistItem,
     updateWatchlist,
     deleteWatchlist,
     addFromOmdb,
@@ -18,11 +24,17 @@ const {
 router.use(auth);
 
 router.post('/',validateWatchlist, addToWatchlist);
-router.get('/', getWatchlist);
-router.get('/stats',getWatchlistStats)
-router.patch('/:id/progress',updateProgress);
-router.put('/:id',validateWatchlistUpdate, updateWatchlist);
-router.delete('/:id', deleteWatchlist);
+
+router.get('/', validatePagination, getWatchlist);
+router.get('/stats',getWatchlistStats);
+router.get('/:id',validateWatchlistId,getWatchlistItem);
+
+router.patch('/:id/progress',validateWatchlistId,updateProgress);
+
+router.put('/:id',validateWatchlistId,validateWatchlistUpdate, updateWatchlist);
+
+router.delete('/:id',validateWatchlistId ,deleteWatchlist);
+
 router.post('/from-omdb/:imdbId',addFromOmdb);
 
 module.exports = router;
