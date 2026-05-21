@@ -1,4 +1,5 @@
 const Watchlist = require("../models/Watchlist");
+const axios=require('axios');
 
 //CREATE
 const addToWatchlist = async (req,res) => {
@@ -86,4 +87,53 @@ const deleteWatchlist = async (req,res)=>{
         });
     }
 }
-module.exports = {addToWatchlist, getWatchlist, updateWatchlist, deleteWatchlist};
+
+//Fetching from omdb and saving in mongoDB
+const addFromOmdb = async (req,res) => {
+    try {
+        const imdbId=req.params.imdbId;
+
+        const response = await axios.get(
+            `http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbId}`
+        );
+
+        const data=response.data;
+
+        if(data.Response === 'False') {
+            return res.status(404).json({
+                message:data.error
+            });
+        }
+
+        const watchlistItem = await Watchlist.create({
+            user: req.user._id,
+            title: data.Title,
+            type: data.Type,
+            imdbId: data.imdbID,
+            posterPath: data.Poster,
+            overview: data.Plot,
+            releaseYear: data.Year,
+            genres: data.Genre ? data.Genre.split(', '):[],
+            language: data.Language,
+            runtime: data.Runtime,
+            totalSeasons: data.totalSeasons ? Number(data.totalSeasons):null,
+        });
+
+        res.status(201).json(watchlistItem);
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        if (error.code === 11000) {
+            return res.status(400).json({
+                message: 'This title is already in your watchlist'
+            });
+        }
+
+        res.status(500).json({
+            message: 'Error saving movie from OMDb'
+        });
+    }
+}
+module.exports = {addToWatchlist, getWatchlist, updateWatchlist, deleteWatchlist, addFromOmdb};

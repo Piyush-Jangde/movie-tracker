@@ -22,7 +22,7 @@ const watchlistSchema = new mongoose.Schema(
         },
 
         imdbId: {
-            type: Number,
+            type: String,
         },
         posterPath: {
             type: String,
@@ -34,7 +34,7 @@ const watchlistSchema = new mongoose.Schema(
             type: String,
         },
         releaseYear: {
-            type: Number,
+            type: String,
         },
         genre: [
             {
@@ -47,7 +47,7 @@ const watchlistSchema = new mongoose.Schema(
 
         //for movies
         runtime: {
-            type: Number,
+            type: String,
         },
 
         //for series
@@ -104,7 +104,7 @@ const watchlistSchema = new mongoose.Schema(
 watchlistSchema.index(
     {
         user: 1,
-        tmdbId:1,
+        imdbId:1,
     },
     {
         unique:true,
