@@ -8,7 +8,7 @@ const watchlistSchema = new mongoose.Schema(
             required: true,
         },
 
-        //Movies/ Series meta data (to be fetched by TMDb API)
+        //Movies/ Series meta data (to be fetched by OMDb API)
 
         title: { //can be done manually or fetched by API
             type: String,
@@ -110,18 +110,19 @@ watchlistSchema.index(
     },
     {
         unique:true,
+        partialFilterExpression: {
+            imdbId: { $exists: true, $ne: null }
+        }
     }
 );
 
 
-watchlistSchema.pre('save',function (next) {
+watchlistSchema.pre('save',function () {
     if( this.status === 'watching' && !this.startedAt ) {
         this.startedAt= new Date();
     }
     if( this.status === 'completed' && !this.completedAt) {
         this.completedAt = new Date();
     }
-
-    next();
 })
 module.exports = mongoose.model('Watchlist', watchlistSchema);

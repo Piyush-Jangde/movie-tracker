@@ -5,8 +5,9 @@ const auth=require('../middleware/authMiddleware');
 const {
     validateWatchlist,
     validateWatchlistUpdate,
-    validatePagination,
-    validateWatchlistId
+    validateWatchlistQuery,
+    validateWatchlistId,
+    validateProgressUpdate,
 } = require('../middleware/validationMiddleware');
 const {
     addToWatchlist,
@@ -25,11 +26,11 @@ router.use(auth);
 
 router.post('/',validateWatchlist, addToWatchlist);
 
-router.get('/', validatePagination, getWatchlist);
+router.get('/', validateWatchlistQuery, getWatchlist);
 router.get('/stats',getWatchlistStats);
 router.get('/:id',validateWatchlistId,getWatchlistItem);
 
-router.patch('/:id/progress',validateWatchlistId,updateProgress);
+router.patch('/:id/progress',validateWatchlistId,validateProgressUpdate,updateProgress);
 
 router.put('/:id',validateWatchlistId,validateWatchlistUpdate, updateWatchlist);
 

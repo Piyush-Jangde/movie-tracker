@@ -1,5 +1,6 @@
 const Watchlist = require("../models/Watchlist");
 const axios=require('axios');
+const mongoose=require('mongoose');
 
 //CREATE
 const addToWatchlist = async (req,res,next) => {
@@ -12,6 +13,9 @@ const addToWatchlist = async (req,res,next) => {
         res.status(201).json(item);
     } catch (error) {
         next(error);
+        return res.status(500).json({
+            message: error.message,
+        });
     }
 };
  
@@ -44,7 +48,9 @@ const getWatchlist = async (req,res,next)=>{
         if(type) filter.type=type;
 
         //Filter by favorite
-        if(favorite) filter.favorite=favorite;
+        if (favorite !== undefined) {
+           filter.favorite = favorite === 'true';
+        }
 
         ; 
 
@@ -114,7 +120,7 @@ const updateWatchlist = async (req, res,next) => {
 
         await item.save();
 
-        res.json(item);
+        res.json({item});
 
     } catch (error) {
         next(error);
@@ -128,6 +134,12 @@ const deleteWatchlist = async (req,res,next)=>{
             _id: req.params.id,
             user: req.user.id,
         });
+
+        if(!item) {
+            return res.status(404).json({
+                message: "Watchlist item not found"
+            });
+        }
 
         res.json({
             message: "Deleted Successfully"
@@ -211,7 +223,7 @@ const getWatchlistStats = async (req,res,next) => {
         const avgRatingResult = await Watchlist.aggregate([
             {
                 $match: {
-                    user: req.user.id,
+                    user: new mongoose.Types.ObjectId(req.user.id),
                     rating: { $ne: null }
                 }
             },
@@ -261,7 +273,11 @@ const updateProgress = async (req,res,next) => {
                 message: 'Watchlist item not found'
             });
         }
-
+        if (item.type !== 'series') {
+            return res.status(400).json({
+                message: 'Progress can only be updated for series'
+            });
+        }
         if(season !==undefined) {
             item.progress.season = season;
         }
@@ -277,7 +293,9 @@ const updateProgress = async (req,res,next) => {
 
         await item.save();
 
-        res.json(item);
+        res.json({
+            progress: item.progress
+        });
     } catch (error) {
         next(error);
     }

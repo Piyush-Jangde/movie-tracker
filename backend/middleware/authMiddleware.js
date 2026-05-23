@@ -34,8 +34,8 @@ const protect = async (req, res, next) => {
   } catch (error) {
   console.log("FULL ERROR:", error);
 
-  res.status(500).json({
-    message: error.message,
+  return res.status(401).json({
+    message: "Token is not valid",
   });
 }
 };
