@@ -1,11 +1,31 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Search from "./pages/Search";
+import Watchlist from "./pages/Watchlist";
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        Movie Tracker Frontend Ready
-      </h1>
-    </div>
-  );
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-900 text-white">
+        <Navbar/>
+
+        <div className="p-6">
+          <Routes>
+            <Route path="/" element={<Home/>} />
+            <Route path="/search" element={<Search/>} />
+            <Route path="/watchlist" element={<Watchlist/>} />
+            <Route path="/login" element={<Login/>} />
+            <Route path="/register" element={<Register/>} />
+          </Routes>
+        </div>
+      </div>
+    </BrowserRouter>
+  )
 }
 
 export default App;
