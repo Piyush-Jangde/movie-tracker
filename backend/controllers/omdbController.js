@@ -17,12 +17,12 @@ const searchMovies = async (req,res,next) => {
 
         if(data.Response === 'False') {
             return res.status(404).json({
-                message:data.error
+                message:data.Error
             });
         }
 
         const cleanedResults=data.Search.map((item)=> ({
-            imdbId: item.imdbId,
+            imdbId: item.imdbID,
             title: item.Title,
             type: item.Type,
             posterPath: item.Poster,
@@ -48,14 +48,14 @@ const getMovieDetails = async (req,res,next) => {
 
         if(data.Response === 'False') {
             return res.status(404).json({
-                message:data.error
+                message:data.Error
             });
         }
 
 
         console.log(data);
         const cleanedData = {
-            imdbId: data.imdbId,
+            imdbId: data.imdbID,
             title: data.Title,
             type: data.Type,
             posterPath: data.Poster,
