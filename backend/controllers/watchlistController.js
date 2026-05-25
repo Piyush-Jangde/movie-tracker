@@ -22,10 +22,11 @@ const addToWatchlist = async (req,res,next) => {
 //READ (fetches the whole collection)
 const getWatchlist = async (req,res,next)=>{
     try {
-        const {status, type, favorite, title, page=1, limit=10} = req.query;
+        const {status, type, favorite, title, page=1, limit=50} = req.query;
 
         const pageNum=Number(page);
         const limitNum=Number(limit);
+
         //Number of records to be skipped
         const skip=(pageNum-1)*limitNum;
 
@@ -52,7 +53,7 @@ const getWatchlist = async (req,res,next)=>{
            filter.favorite = favorite === 'true';
         }
 
-        ; 
+         
 
         const totalItems= await Watchlist.countDocuments(filter);
         //sorting

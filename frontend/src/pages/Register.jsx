@@ -43,29 +43,44 @@ function Register() {
 
       navigate("/");
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      alert(error.response?.data || "Registration Failed");
     }
   }
 
   return (
-    <div>
-      <h1>Create Account</h1>
+    <div className="max-w-md mx-auto mt-16 bg-gray-800 p-8 rounded-xl shadow-lg">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Create Account
+      </h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="username">Name</label>
+          <label
+            htmlFor="username"
+            className="block mb-2 text-sm font-medium"
+          >
+            Name
+          </label>
+
           <input
             id="username"
             type="text"
             name="username"
             placeholder="Enter your name"
-            value={formData.name}
+            value={formData.username}
             onChange={handleChange}
+            className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="email">Email</label>
+          <label
+            htmlFor="email"
+            className="block mb-2 text-sm font-medium"
+          >
+            Email
+          </label>
+
           <input
             id="email"
             type="email"
@@ -73,11 +88,18 @@ function Register() {
             placeholder="Enter your email"
             value={formData.email}
             onChange={handleChange}
+            className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="password">Password</label>
+          <label
+            htmlFor="password"
+            className="block mb-2 text-sm font-medium"
+          >
+            Password
+          </label>
+
           <input
             id="password"
             type="password"
@@ -85,10 +107,14 @@ function Register() {
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
+            className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <button type="submit">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 py-2 rounded-lg font-semibold hover:bg-blue-700"
+        >
           Register
         </button>
       </form>

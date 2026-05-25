@@ -14,27 +14,31 @@ function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-900 text-white">
-        <Navbar/>
+        <Navbar />
 
-        <div className="p-6">
+        <main className="max-w-6xl mx-auto px-6 py-8">
           <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/search" element={<Search/>} />
-            <Route 
-              path="/watchlist" 
+            <Route path="/" element={<Home />} />
+
+            <Route path="/search" element={<Search />} />
+
+            <Route
+              path="/watchlist"
               element={
-              <ProtectedRoute>
-                <Watchlist/>
-              </ProtectedRoute>
-              } 
+                <ProtectedRoute>
+                  <Watchlist />
+                </ProtectedRoute>
+              }
             />
-            <Route path="/login" element={<Login/>} />
-            <Route path="/register" element={<Register/>} />
+
+            <Route path="/login" element={<Login />} />
+
+            <Route path="/register" element={<Register />} />
           </Routes>
-        </div>
+        </main>
       </div>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App;
