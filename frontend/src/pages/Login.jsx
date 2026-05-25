@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const {login} =useContext(AuthContext);
 
   const [formData, setformData] = useState({
     email: "",
@@ -24,8 +26,10 @@ function Login() {
       const response = await api.post("/auth/login", formData);
 
       // Save token and user in local storage
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      login (
+        response.data.user,
+        response.data.token,
+      )
 
       navigate("/");
     } catch (error) {
@@ -38,8 +42,9 @@ function Login() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Email</label>
+          <label htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
             name="email"
             placeholder="Enter your registered email"
@@ -49,8 +54,9 @@ function Login() {
         </div>
 
         <div>
-          <label>Password</label>
+          <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
             name="password"
             placeholder="Enter your password"

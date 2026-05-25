@@ -8,6 +8,8 @@ import Register from "./pages/Register";
 import Search from "./pages/Search";
 import Watchlist from "./pages/Watchlist";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
@@ -18,7 +20,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Home/>} />
             <Route path="/search" element={<Search/>} />
-            <Route path="/watchlist" element={<Watchlist/>} />
+            <Route 
+              path="/watchlist" 
+              element={
+              <ProtectedRoute>
+                <Watchlist/>
+              </ProtectedRoute>
+              } 
+            />
             <Route path="/login" element={<Login/>} />
             <Route path="/register" element={<Register/>} />
           </Routes>

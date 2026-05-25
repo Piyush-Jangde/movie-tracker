@@ -1,15 +1,35 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function Navbar() {
-    return(
-        <nav className="bg-gray-800 px-6 py-4 flex gap-6 text-white">
-            <Link to="/">Home</Link>
-            <Link to="/search">Search</Link>
-            <Link to="/watchlist">Watchlist</Link>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
-        </nav>
-    );
+  const { user, logout } = useContext(AuthContext);
+
+  return (
+    <nav>
+      <Link to="/">Home </Link>
+      <Link to="/search">Search </Link>
+
+      {user ? (
+        <>
+          <Link to="/watchlist">Watchlist </Link>
+
+          <button onClick={logout}>
+            Logout  
+          </button>
+
+          <span>
+             {user.username}
+          </span>
+        </>
+      ) : (
+        <>
+          <Link to="/login">Login </Link>
+          <Link to="/register">Register </Link>
+        </>
+      )}
+    </nav>
+  );
 }
 
 export default Navbar;
