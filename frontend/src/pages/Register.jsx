@@ -1,11 +1,19 @@
 import { useState } from "react";
+import {useNavigate} from "react-router-dom";
+import api from "../services/api";
+
+
 
 function Register() {
+  const navigate=useNavigate();
+  
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
+
+  
 
   function handleChange(e) {
     setFormData({
@@ -14,16 +22,36 @@ function Register() {
     });
   }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    try {
+      const response = await api.post(
+        "/auth/register",
+      formData
+    );
+
+      // Save token and user in local storage
+      localStorage.setItem("token",response.data.token);
+      localStorage.setItem("user",JSON.stringify(response.data.user));
+
+
+      navigate("/");
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
+  }
+
   return (
     <div>
       <h1>Create Account</h1>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <label>Name</label>
           <input
             type="text"
-            name="name"
+            name="username"
             placeholder="Enter your name"
             value={formData.name}
             onChange={handleChange}
