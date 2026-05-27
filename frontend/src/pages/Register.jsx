@@ -43,7 +43,15 @@ function Register() {
 
       navigate("/");
     } catch (error) {
-      alert(error.response?.data || "Registration Failed");
+      const errorData = error.response?.data;
+
+      if (errorData?.message) {
+        alert(errorData.message);
+      } else if (errorData?.errors?.[0]?.msg) {
+        alert(errorData.errors[0].msg);
+      } else {
+        alert("Registration Failed");
+      }
     }
   }
 

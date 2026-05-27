@@ -33,7 +33,15 @@ function Login() {
 
       navigate("/");
     } catch (error) {
-      alert(error.response?.data || "Login Failed");
+        const errorData = error.response?.data;
+
+        if (errorData?.message) {
+          alert(errorData.message);
+        } else if (errorData?.errors?.[0]?.msg) {
+          alert(errorData.errors[0].msg);
+        } else {
+          alert("Login Failed");
+        }
     }
   }
   return (
