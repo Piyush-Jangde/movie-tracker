@@ -5,6 +5,7 @@ A full-stack movie and TV series tracking application where users can search tit
 ## Live Demo
 
 Frontend: [https://movie-tracker-livid-sigma.vercel.app](https://movie-tracker-livid-sigma.vercel.app)
+
 Backend API: [https://movie-tracker-cb6f.onrender.com](https://movie-tracker-cb6f.onrender.com)
 
 ---
@@ -142,4 +143,3 @@ npm run dev
 # Author
 
 Piyush Jangde
-B.Tech Agricultural and Food Engineering, IIT Kharagpur
